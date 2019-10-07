@@ -1,17 +1,18 @@
 from pacai.agents.base import BaseAgent
-from pacai.core.game import Directions
+from pacai.core.directions import Directions
 
 class LeftTurnAgent(BaseAgent):
     """
-    An agent that turns left at every opportunity
+    An agent that turns left at every opportunity.
+    Three lefts make a right, and two rights (six lefts) don't make a wrong.
     """
 
-    def __init__(self, index):
+    def __init__(self, index, **kwargs):
         super().__init__(index)
 
     def getAction(self, state):
         legal = state.getLegalPacmanActions()
-        current = state.getPacmanState().configuration.direction
+        current = state.getPacmanState().getDirection()
         if current == Directions.STOP:
             current = Directions.NORTH
 

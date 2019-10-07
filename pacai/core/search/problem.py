@@ -1,48 +1,84 @@
-from pacai.util import util
+import abc
 
-class SearchProblem(object):
-  """
-  This class outlines the structure of a search problem, but doesn't implement
-  any of the methods (in object-oriented terminology: an abstract class).
+class SearchProblem(abc.ABC):
+    """
+    This class outlines the structure of a search problem.
+    Any search problem will need to provide answers to the following questions:
+    ```
+    Where should the search start?
+    Is this state a goal?
+    What moves are possible from this state?
+    How much did it cost to perform these action?
+    ```
 
-  You do not need to change anything in this class, ever.
-  """
+    The answers to these questions are provided by implementing
+    the abstract methods in this class.
 
-  def startingState(self):
-     """
-     Returns the start state for the search problem
-     """
+    Note that all the states passed into a `SearchProblem` are also generated
+    by the same `SearchProblem`.
+    `SearchProblem.startingState` and `SearchProblem.successorStates` produce
+    states,
+    while `SearchProblem.isGoal` and `SearchProblem.actionsCost` evaluate
+    those same states and actions.
+    """
 
-     util.raiseNotDefined()
+    def __init__(self):
+        # The number of search nodes we expended.
+        self._numExpanded = 0
 
-  def isGoal(self, state):
-     """
-     state: Search state
+        # Keep track of the states we have visited.
+        # Children are not required to use these,
+        # but doing so will allow the GUI to highlight the visited locations.
+        self._visitedLocations = set()
+        self._visitHistory = []
 
-     Returns True if and only if the state is a valid goal state
-     """
+    @abc.abstractmethod
+    def actionsCost(self, actions):
+        """
+        Answers the question:
+        How much did it cost to perform these action?
 
-     util.raiseNotDefined()
+        Returns the total cost of a particular sequence of legal actions.
+        """
 
-  def successorStates(self, state):
-     """
-     state: Search state
+        pass
 
-     For a given state, this should return a list of triples,
-     (successor, action, stepCost), where 'successor' is a
-     successor to the current state, 'action' is the action
-     required to get there, and 'stepCost' is the incremental
-     cost of expanding to that successor
-     """
+    def getExpandedCount(self):
+        return self._numExpanded
 
-     util.raiseNotDefined()
+    def getVisitHistory(self):
+        return self._visitHistory
 
-  def actionsCost(self, actions):
-     """
-     actions: A list of actions to take
+    @abc.abstractmethod
+    def isGoal(self, state):
+        """
+        Answers the question:
+        Is this state a goal?
 
-     This method returns the total cost of a particular sequence of actions.
-     The sequence must be composed of legal moves.
-     """
+        Returns True if and only if the state is a valid goal state.
+        """
 
-     util.raiseNotDefined()
+        pass
+
+    @abc.abstractmethod
+    def startingState(self):
+        """
+        Answers the question:
+        Where should the search start?
+
+        Returns the starting state for the search problem.
+        """
+
+        pass
+
+    @abc.abstractmethod
+    def successorStates(self, state):
+        """
+        Answers the question:
+        What moves are possible from this state?
+
+        Returns a list of tuples with three values:
+        (successor state, action, cost of taking the action).
+        """
+
+        pass
