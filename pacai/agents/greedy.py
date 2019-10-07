@@ -1,20 +1,24 @@
 import random
 
 from pacai.agents.base import BaseAgent
-from pacai.core.game import Directions
-from pacai.util import util
+from pacai.core.directions import Directions
+from pacai.util import reflection
 
 class GreedyAgent(BaseAgent):
-    def __init__(self, index, evalFn = "pacai.core.eval.score"):
+    """
+    An agent that greedily takes the available move with the best score at the time.
+    """
+
+    def __init__(self, index, evalFn = "pacai.core.eval.score", **kwargs):
         super().__init__(index)
 
-        self.evaluationFunction = util.qualifiedImport(evalFn)
-        assert self.evaluationFunction != None
+        self.evaluationFunction = reflection.qualifiedImport(evalFn)
+        assert(self.evaluationFunction is not None)
 
     def getAction(self, state):
         # Generate candidate actions
         legal = state.getLegalPacmanActions()
-        if Directions.STOP in legal:
+        if (Directions.STOP in legal):
             legal.remove(Directions.STOP)
 
         successors = [(state.generateSuccessor(0, action), action) for action in legal]

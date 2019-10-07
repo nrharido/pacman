@@ -1,3 +1,4 @@
+import logging
 import random
 import time
 
@@ -6,23 +7,22 @@ from pacai.util import util
 
 class ReflexCaptureAgent(CaptureAgent):
     """
-    A base class for reflex agents that chooses score-maximizing actions
+    A base class for reflex agents that chooses score-maximizing actions.
     """
 
-    def __init__(self, index):
+    def __init__(self, index, **kwargs):
         super().__init__(index)
 
     def chooseAction(self, gameState):
         """
-        Picks among the actions with the highest Q(s, a).
+        Picks among the actions with the highest return from `ReflexCaptureAgent.evaluate`.
         """
 
         actions = gameState.getLegalActions(self.index)
 
-        # You can profile your evaluation time by uncommenting these lines
-        # start = time.time()
+        start = time.time()
         values = [self.evaluate(gameState, a) for a in actions]
-        # print('eval time for agent %d: %.4f' % (self.index, time.time() - start))
+        logging.debug('evaluate() time for agent %d: %.4f' % (self.index, time.time() - start))
 
         maxValue = max(values)
         bestActions = [a for a, v in zip(actions, values) if v == maxValue]
@@ -36,7 +36,8 @@ class ReflexCaptureAgent(CaptureAgent):
 
         successor = gameState.generateSuccessor(self.index, action)
         pos = successor.getAgentState(self.index).getPosition()
-        if pos != util.nearestPoint(pos):
+
+        if (pos != util.nearestPoint(pos)):
             # Only half a grid position was covered.
             return successor.generateSuccessor(self.index, action)
         else:
@@ -44,7 +45,7 @@ class ReflexCaptureAgent(CaptureAgent):
 
     def evaluate(self, gameState, action):
         """
-        Computes a linear combination of features and feature weights
+        Computes a linear combination of features and feature weights.
         """
 
         features = self.getFeatures(gameState, action)
@@ -54,19 +55,22 @@ class ReflexCaptureAgent(CaptureAgent):
 
     def getFeatures(self, gameState, action):
         """
-        Returns a counter of features for the state
+        Returns a dict of features for the state.
+        The keys match up with the return from `ReflexCaptureAgent.getWeights`.
         """
 
-        features = util.Counter()
         successor = self.getSuccessor(gameState, action)
-        features['successorScore'] = self.getScore(successor)
 
-        return features
+        return {
+            'successorScore': self.getScore(successor)
+        }
 
     def getWeights(self, gameState, action):
         """
-        Normally, weights do not depend on the gamestate.
-        They can be either a counter or a dictionary.
+        Returns a dict of weights for the state.
+        The keys match up with the return from `ReflexCaptureAgent.getFeatures`.
         """
 
-        return {'successorScore': 1.0}
+        return {
+            'successorScore': 1.0
+        }
